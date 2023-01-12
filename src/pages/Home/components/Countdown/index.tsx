@@ -5,12 +5,8 @@ import { CountdownContainer, Separator } from './styles'
 import { CycleContext } from '../..'
 
 export function Countdown() {
-  const {
-    activeCycle,
-    markCurrentCycleAsFinished,
-    activeCycleId,
-    changeActiveCycleId,
-  } = useContext(CycleContext)
+  const { activeCycle, markCurrentCycleAsFinished, activeCycleId } =
+    useContext(CycleContext)
 
   const [amountSecondsPassed, setAmountSecondsPassed] = useState(0)
 
@@ -45,7 +41,6 @@ export function Countdown() {
           markCurrentCycleAsFinished()
           setAmountSecondsPassed(totalSeconds)
           clearInterval(interval)
-          changeActiveCycleId(null)
           document.title = 'Timer'
         } else {
           setAmountSecondsPassed(secondsDifference)
@@ -57,13 +52,7 @@ export function Countdown() {
       clearInterval(interval)
       setAmountSecondsPassed(0)
     }
-  }, [
-    activeCycle,
-    totalSeconds,
-    activeCycleId,
-    markCurrentCycleAsFinished,
-    changeActiveCycleId,
-  ])
+  }, [activeCycle, totalSeconds, activeCycleId, markCurrentCycleAsFinished])
 
   return (
     <CountdownContainer>

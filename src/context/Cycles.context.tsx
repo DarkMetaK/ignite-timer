@@ -1,16 +1,21 @@
-import { createContext, ReactNode, useState } from 'react'
+import { createContext, ReactNode, useReducer } from 'react'
 
+import { cyclesReducer } from '../reducers/Cycles/reducer'
+import {
+  addNewCycleAction,
+  finisheCycleAction,
+  interruptCycleAction,
+} from '../reducers/Cycles/actions'
 import { Cycle } from '../pages/Home/types'
 
 interface ICyclesContextProvider {
   children: ReactNode
 }
 
-export interface ICycleContext {
+interface ICycleContext {
   cycles: Cycle[]
   activeCycle: Cycle | undefined
   activeCycleId: string | null
-  changeActiveCycleId: (value: string | null) => void
   markCurrentCycleAsFinished: () => void
   markCurrentCycleAsInterrupted: () => void
   createNewCycle: (cycle: Cycle) => void
@@ -19,43 +24,25 @@ export interface ICycleContext {
 export const CycleContext = createContext({} as ICycleContext)
 
 export function CycleContextProvider({ children }: ICyclesContextProvider) {
-  const [cycles, setCycles] = useState<Cycle[]>([])
-  const [activeCycleId, setActiveCycleId] = useState<string | null>(null)
+  const [cyclesState, dispatch] = useReducer(cyclesReducer, {
+    cycles: [],
+    activeCycleId: null,
+  })
+
+  const { cycles, activeCycleId } = cyclesState
 
   const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
 
+  function createNewCycle(newCycle: Cycle) {
+    dispatch(addNewCycleAction(newCycle))
+  }
+
   function markCurrentCycleAsFinished() {
-    setCycles((state) =>
-      state.map((cycle) => {
-        if (cycle.id === activeCycleId) {
-          return { ...cycle, finishedDate: new Date() }
-        } else {
-          return cycle
-        }
-      }),
-    )
+    dispatch(finisheCycleAction())
   }
 
   function markCurrentCycleAsInterrupted() {
-    setCycles((state) =>
-      state.map((cycle) => {
-        if (cycle.id === activeCycleId) {
-          return { ...cycle, interruptedDate: new Date() }
-        } else {
-          return cycle
-        }
-      }),
-    )
-    setActiveCycleId(null)
-  }
-
-  function createNewCycle(newCycle: Cycle) {
-    setCycles((state) => [...state, newCycle])
-    setActiveCycleId(newCycle.id)
-  }
-
-  function changeActiveCycleId(value: string | null) {
-    setActiveCycleId(value)
+    dispatch(interruptCycleAction())
   }
 
   return (
@@ -65,7 +52,6 @@ export function CycleContextProvider({ children }: ICyclesContextProvider) {
         activeCycle,
         markCurrentCycleAsFinished,
         activeCycleId,
-        changeActiveCycleId,
         markCurrentCycleAsInterrupted,
         createNewCycle,
       }}
