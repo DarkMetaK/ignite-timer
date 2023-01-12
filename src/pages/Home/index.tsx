@@ -1,26 +1,24 @@
-import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useContext } from 'react'
+import { useForm, FormProvider } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { HandPalm, Play } from 'phosphor-react'
-import { differenceInSeconds } from 'date-fns'
 
 import {
   HomeContainer,
-  CountdownContainer,
-  FormContainer,
-  Separator,
   StartCountdownButton,
-  TaskInput,
-  MinutesAmountInput,
   StopCountdownButton,
 } from './styles'
+
+import { NewCycleForm } from './components/NewCycleForm'
+import { Countdown } from './components/Countdown'
 import { Cycle, ITaskFormProps } from './types'
 
+import { CycleContext } from '../../context/Cycles.context'
+
 export function Home() {
-  const [cycles, setCycles] = useState<Cycle[]>([])
-  const [activeCycleId, setActiveCycleId] = useState<string | null>(null)
-  const [amountSecondsPassed, setAmountSecondsPassed] = useState(0)
+  const { markCurrentCycleAsInterrupted, activeCycle, createNewCycle } =
+    useContext(CycleContext)
 
   const schema = yup.object({
     task: yup
@@ -35,12 +33,7 @@ export function Home() {
       .required('Esse campo é obrigatório'),
   })
 
-  const {
-    register,
-    handleSubmit,
-    formState: { isValid },
-    reset,
-  } = useForm<ITaskFormProps>({
+  const newCycleForm = useForm<ITaskFormProps>({
     resolver: yupResolver(schema),
     mode: 'onChange',
     defaultValues: {
@@ -48,25 +41,11 @@ export function Home() {
       minutesAmount: 5,
     },
   })
-
-  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
-
-  useEffect(() => {
-    let interval: number
-
-    if (activeCycle) {
-      interval = setInterval(() => {
-        setAmountSecondsPassed(
-          differenceInSeconds(new Date(), activeCycle.startedAt),
-        )
-      }, 1000)
-    }
-
-    return () => {
-      clearInterval(interval)
-      setAmountSecondsPassed(0)
-    }
-  }, [activeCycle])
+  const {
+    reset,
+    handleSubmit,
+    formState: { isValid },
+  } = newCycleForm
 
   function handleCreateNewCycle({ task, minutesAmount }: ITaskFormProps) {
     const nowDateInfo = new Date()
@@ -76,82 +55,23 @@ export function Home() {
       minutesAmount,
       startedAt: nowDateInfo,
     }
-    setCycles((state) => [...state, newCycle])
-    setActiveCycleId(newCycle.id)
+    createNewCycle(newCycle)
     reset()
   }
 
   function handleInterruptCycle() {
-    setCycles(
-      cycles.map((cycle) => {
-        if (cycle.id === activeCycleId) {
-          return { ...cycle, interruptedDate: new Date() }
-        } else {
-          return cycle
-        }
-      }),
-    )
-    setActiveCycleId(null)
+    markCurrentCycleAsInterrupted()
+    document.title = 'Timer'
   }
-
-  const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0
-  const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
-
-  const minutesAmount = Math.floor(currentSeconds / 60).toLocaleString(
-    'default',
-    {
-      minimumIntegerDigits: 2,
-    },
-  )
-  const secondsAmount = (currentSeconds % 60).toLocaleString('default', {
-    minimumIntegerDigits: 2,
-  })
-
-  useEffect(() => {
-    if (activeCycle) document.title = `${minutesAmount}:${secondsAmount}`
-  }, [minutesAmount, secondsAmount, activeCycle])
 
   return (
     <HomeContainer>
       <form onSubmit={handleSubmit(handleCreateNewCycle)}>
-        <FormContainer>
-          <label htmlFor="task">Vou trabalhar em </label>
-          <TaskInput
-            type="text"
-            id="task"
-            placeholder="Dê um nome para o seu projeto"
-            list="task-suggestions"
-            {...register('task')}
-            disabled={!!activeCycle}
-          />
-          <datalist id="task-suggestions">
-            <option value="Projeto 1" />
-            <option value="Projeto 2" />
-            <option value="Projeto 3" />
-          </datalist>
+        <FormProvider {...newCycleForm}>
+          <NewCycleForm />
+        </FormProvider>
 
-          <label htmlFor="minutesAmount">durante </label>
-          <MinutesAmountInput
-            type="number"
-            id="minutesAmount"
-            placeholder="00"
-            step={5}
-            max={60}
-            min={5}
-            {...register('minutesAmount')}
-            disabled={!!activeCycle}
-          />
-
-          <span>minutos.</span>
-        </FormContainer>
-
-        <CountdownContainer>
-          <span>{minutesAmount[0]}</span>
-          <span>{minutesAmount[1]}</span>
-          <Separator>:</Separator>
-          <span>{secondsAmount[0]}</span>
-          <span>{secondsAmount[1]}</span>
-        </CountdownContainer>
+        <Countdown />
 
         {activeCycle ? (
           <StopCountdownButton type="button" onClick={handleInterruptCycle}>
@@ -168,3 +88,4 @@ export function Home() {
     </HomeContainer>
   )
 }
+export { CycleContext }
