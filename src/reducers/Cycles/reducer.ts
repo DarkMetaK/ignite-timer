@@ -3,7 +3,7 @@ import { produce } from 'immer'
 import { Cycle } from '../../pages/Home/types'
 import { ActionTypes } from './actions'
 
-interface ICycleReducerState {
+export interface ICycleReducerState {
   cycles: Cycle[]
   activeCycleId: string | null
 }
@@ -12,8 +12,8 @@ export function cyclesReducer(state: ICycleReducerState, action: any) {
   switch (action.type) {
     case ActionTypes.ADD_NEW_CYCLE:
       return produce(state, (draft) => {
-        draft.cycles.push(action.payload!.newCycle)
-        draft.activeCycleId = action.payload!.newCycle.id
+        draft.cycles.push(action.payload.newCycle)
+        draft.activeCycleId = action.payload.newCycle.id
       })
 
     case ActionTypes.INTERRUPT_CURRENT_CYCLE: {
@@ -41,5 +41,8 @@ export function cyclesReducer(state: ICycleReducerState, action: any) {
         draft.activeCycleId = null
       })
     }
+
+    default:
+      return state
   }
 }
