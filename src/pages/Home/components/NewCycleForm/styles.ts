@@ -15,6 +15,15 @@ export const FormContainer = styled.div`
     position: absolute;
     top: 0;
   }
+
+  @media (max-width: 780px) {
+    flex-direction: column;
+
+    input {
+      width: 100%;
+      text-align: center;
+    }
+  }
 `
 
 const BaseInput = styled.input`
@@ -44,4 +53,8 @@ export const TaskInput = styled(BaseInput)`
 
 export const MinutesAmountInput = styled(BaseInput)`
   width: 4rem;
+
+  @media (max-width: 780px) {
+    margin-top: -0.5rem;
+  }
 `

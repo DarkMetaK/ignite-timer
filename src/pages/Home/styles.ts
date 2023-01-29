@@ -7,12 +7,14 @@ export const HomeContainer = styled.main`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-top: 2rem;
 
   form {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 3.5rem;
+    width: 100%;
   }
 `
 

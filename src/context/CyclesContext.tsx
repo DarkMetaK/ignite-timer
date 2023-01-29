@@ -31,6 +31,7 @@ export function CycleContextProvider({ children }: ICyclesContextProvider) {
       activeCycleId: null,
     },
     () => {
+      // Terceira função disparada assim que o reducer for criado, para eu recuperar os dados de outro lugar. Se houver algo no storage eu recupero lá, se não, eu deixo os valores default
       const storedStateAsJSON = localStorage.getItem(
         '@ignite-timer:cycles-state=1.0.0',
       )
