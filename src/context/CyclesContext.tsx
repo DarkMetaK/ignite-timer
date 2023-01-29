@@ -35,7 +35,14 @@ export function CycleContextProvider({ children }: ICyclesContextProvider) {
         '@ignite-timer:cycles-state=1.0.0',
       )
 
-      if (storedStateAsJSON) return JSON.parse(storedStateAsJSON)
+      if (storedStateAsJSON) {
+        return JSON.parse(storedStateAsJSON)
+      }
+
+      return {
+        cycles: [],
+        activeCycleId: null,
+      }
     },
   )
 

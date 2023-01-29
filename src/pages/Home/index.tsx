@@ -14,7 +14,7 @@ import { NewCycleForm } from './components/NewCycleForm'
 import { Countdown } from './components/Countdown'
 import { Cycle, ITaskFormProps } from './types'
 
-import { CycleContext } from '../../context/Cycles.context'
+import { CycleContext } from '../../context/CyclesContext'
 
 export function Home() {
   const { markCurrentCycleAsInterrupted, activeCycle, createNewCycle } =
