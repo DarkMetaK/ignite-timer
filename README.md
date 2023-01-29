@@ -4,7 +4,7 @@
 <br />
 <div align="center">
 
-  <a href="https://github.com/DarkMetaK/DT-Money">
+  <a href="https://github.com/DarkMetaK/02-Ignite-Timer">
     <img src="/src/assets/Logo.svg" alt="Logo" width="160" height="80">
   </a>
 
@@ -40,7 +40,7 @@
 <!-- ABOUT THE PROJECT -->
 ## Sobre
 
-<a href="https://darkmetak-dtmoney.netlify.app/">
+<a href="https://darkmetak-timer.netlify.app/">
     <img src="./src/assets/timer-template.jpg" alt="Product Name Screen Shot" width=100%>
 </a>
 
